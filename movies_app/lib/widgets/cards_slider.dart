@@ -1,11 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:movies_app/models/models.dart';
 
-class CardSliderWidget extends StatelessWidget {
-  const CardSliderWidget({Key? key, required this.movies, this.title})
+class CardSliderWidget extends StatefulWidget {
+  const CardSliderWidget(
+      {Key? key, required this.movies, this.title, required this.onNextOage})
       : super(key: key);
   final List<Movie> movies;
   final String? title;
+  final Function onNextOage;
+
+  @override
+  State<CardSliderWidget> createState() => _CardSliderWidgetState();
+}
+
+class _CardSliderWidgetState extends State<CardSliderWidget> {
+  bool _canGetMore = true;
+  final ScrollController scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(() {
+      final double diff = scrollController.position.maxScrollExtent -
+          scrollController.position.pixels;
+      if (diff <= 500) {
+        if (_canGetMore) {
+          _canGetMore = false;
+          widget.onNextOage();
+        } else {
+          _canGetMore = true;
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +47,11 @@ class CardSliderWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            title != null
+            widget.title != null
                 ? Padding(
                     padding: EdgeInsets.only(bottom: 20),
                     child: Text(
-                      title!,
+                      widget.title!,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
@@ -31,10 +62,11 @@ class CardSliderWidget extends StatelessWidget {
                 : Container(),
             Expanded(
               child: ListView.builder(
+                  controller: scrollController,
                   scrollDirection: Axis.horizontal,
-                  itemCount: movies.length,
+                  itemCount: widget.movies.length,
                   itemBuilder: (_, int index) {
-                    final movie = movies[index];
+                    final movie = widget.movies[index];
                     return _MoviePoster(
                       movie: movie,
                     );

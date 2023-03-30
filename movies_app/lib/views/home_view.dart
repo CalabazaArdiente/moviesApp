@@ -21,8 +21,10 @@ class HomeView extends StatelessWidget {
             children: [
               CardSwiperWidget(movies: moviesProvider.onDisplayMovies),
               CardSliderWidget(
-                  movies: moviesProvider.popularMovies,
-                  title: 'Las más vistas'),
+                movies: moviesProvider.popularMovies,
+                title: 'Las más vistas',
+                onNextOage: () => moviesProvider.getPopularMovies(),
+              ),
             ],
           ),
         ));
